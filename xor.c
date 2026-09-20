@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 
@@ -15,6 +16,7 @@ int main() {
     printf("Do you want to encrypt or decrypt? (e/d): ");
     scanf("%c", &choice);
 
+    while (getchar() != '\n');
     if (choice == 'e') {
         char plaintext[1000];
         char filename[50];

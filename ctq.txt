@@ -1,0 +1,82 @@
+CTQ 1: Core Requirements (atomic, no edge cases)
+The program shall prompt the user to choose between encrypting and decrypting.
+The program shall prompt the user for a filename.
+The program shall prompt the user for a key when encrypting.
+The program shall prompt the user for a key when decrypting.
+The program shall prompt the user for a plaintext message when encrypting.
+The program shall XOR each byte of the plaintext with the corresponding byte of the key when encrypting.
+The program shall write the encrypted output to the file matching the provided filename.
+The program shall read the contents of the file matching the provided filename when decrypting.
+The program shall XOR each byte of the file contents with the corresponding byte of the key when decrypting.
+The program shall display the decrypted plaintext to the screen.
+
+CTQ 2: Core Functionality Tests
+Test: Mode selection accepts "encrypt."
+Requirement: Program prompts for encrypt/decrypt choice.
+If met: Program recognizes the encrypt option and proceeds to the encryption prompts (message, key).
+If not met: Program may crash, ignore the input, default silently to decrypt, or hang waiting for input it never validates.
+Test: Mode selection accepts "decrypt."
+Requirement: Program prompts for encrypt/decrypt choice.
+If met: Program recognizes the decrypt option and proceeds to the decryption prompts (filename, key).
+If not met: Program may misroute to the encryption branch, or terminate with no output.
+Test: Filename prompt captures and uses filename correctly (encrypt mode).
+Requirement: Program prompts for filename and uses it for output.
+If met: A file with the exact name entered appears in the working directory after encryption.
+If not met: Program writes to a hardcoded/default filename, truncates the name, or fails to create any file.
+Test: Key and message prompts (encrypt mode) accept input correctly.
+Requirement: Program prompts for plaintext and key.
+If met: The values entered are stored and used in the XOR operation (verifiable by checking the output changes when key or message changes).
+If not met: Program may read stale/garbage buffer data, truncate input at whitespace, or swap key and message.
+Test: XOR encryption produces correct ciphertext.
+Requirement: Program XORs plaintext with key.
+If met: Manually computing byte-by-byte XOR of a known message and key matches the bytes written to the file.
+If not met: Output may match the plaintext unmodified (XOR not applied), apply the key incorrectly (e.g., same byte repeated instead of cycling), or corrupt data length.
+Test: Encrypted file is saved correctly.
+Requirement: Program saves encrypted message to the given filename.
+If met: File exists after program exit, and its byte length matches the plaintext length.
+If not met: File may not be flushed/closed properly (empty or truncated), or may be saved in the wrong directory.
+Test: Filename prompt captures and uses filename correctly (decrypt mode).
+Requirement: Program prompts for filename and reads that file when decrypting.
+If met: The exact bytes of the specified file are loaded into memory.
+If not met: Program may open a different/default file, or only read part of the file (e.g., stopping at a null byte).
+Test: XOR decryption recovers original plaintext.
+Requirement: Program XORs file contents with key to decrypt.
+If met: Decrypting a file previously encrypted with the same key reproduces the original message exactly.
+If not met: Output may be garbled (wrong key indexing/cycling), partially correct, or identical to the ciphertext (XOR not applied on decrypt path).
+Test: Decrypted plaintext is displayed on screen.
+Requirement: Program prints decrypted plaintext to stdout.
+If met: The recovered message appears in the terminal output, matching the original exactly (including spaces/punctuation).
+If not met: Program may print binary/garbage characters, truncate the output, or write to a file instead of stdout.
+Test: Round-trip consistency across multiple runs.
+Requirement: Full encrypt-then-decrypt cycle preserves the original message using the same key.
+If met: Running encrypt then decrypt as two separate program executions (not just in-memory) returns the exact original string.
+If not met: Data may degrade due to file I/O issues (text vs. binary mode), key desync, or encoding mismatches between runs.
+
+CTQ 3: Edge Case / Error Handling Requirements
+The program shall handle the case where the file provided for decryption does not exist.
+The program shall handle the case where the key is shorter than the message/file being processed.
+The program shall handle the case where the user enters an empty message when encrypting.
+The program shall handle the case where the user enters an empty key.
+The program shall handle the case where the user enters an invalid choice for encrypt/decrypt mode.
+
+CTQ 4: Edge Case / Error Handling Tests
+Test: Decrypting a nonexistent file.
+Requirement: Program handles a missing file gracefully during decryption.
+If met: Program detects the failed file open and prints a clear error message, then exits or re-prompts without crashing.
+If not met: Program may segfault (dereferencing a null file pointer), silently produce empty/garbage output, or hang.
+Test: Key shorter than plaintext/ciphertext.
+Requirement: Program handles keys shorter than the data being processed.
+If met: Program cycles the key (wraps around, e.g., using modulo indexing) and produces a correctly recoverable result.
+If not met: Program may only XOR the first N bytes (leaving the rest unencrypted/unmodified), read out of bounds past the key buffer, or crash.
+Test: Empty message on encryption.
+Requirement: Program handles an empty plaintext input.
+If met: Program creates a valid (zero-byte or otherwise well-formed) output file without crashing, and decrypting it yields an empty string.
+If not met: Program may crash on a zero-length loop bound, write uninitialized memory to the file, or hang waiting for more input.
+Test: Empty key on encryption or decryption.
+Requirement: Program handles an empty key input.
+If met: Program detects the empty key and either rejects it with an error message or handles it without a divide-by-zero/modulo-by-zero crash.
+If not met: Program may crash (modulo by zero when cycling an empty key), or silently treat "no key" as XOR with 0 (i.e., ciphertext = plaintext) without telling the user.
+Test: Invalid mode selection input.
+Requirement: Program handles invalid encrypt/decrypt input (e.g., typing "x", a number, or hitting enter with nothing).
+If met: Program detects the invalid input, prints an error or re-prompts, and does not proceed into either branch.
+If not met: Program may default silently to one mode, read garbage into the mode variable and behave unpredictably, or crash on an unhandled switch/if-else case.

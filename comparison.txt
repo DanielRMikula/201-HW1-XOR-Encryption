@@ -1,0 +1,18 @@
+Name: Daniel Mikula
+Name: Grace McGinn
+
+A meaningful difference is a significant change in logic 
+within the program. For example, choosing to write seperate
+functions or keeping it all in the main. 
+
+
+Meaningful Differences:
+
+1. Xor encrypt and decrypt are combined into one function in my code, but 
+two seperate functions in Grace's.
+
+2. My xor function loops until it hits a null byte, Grace's XOR function
+takes a length as a paramater.
+
+3. Grace used an int for the key length and loop counter, I made the key 
+a character and looped its length.

@@ -1,0 +1,1 @@
+Adding the if (keyLength == 0) { printf(...); return; } guard at the top of xorEncryptDecrypt to prevent mod-by-zero when the key string is empty. This was added by an llm for this step.

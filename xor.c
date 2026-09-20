@@ -6,6 +6,10 @@
 
 void xorEncryptDecrypt(char *message, char *key) {
     int keyLength = strlen(key);
+    if (keyLength == 0){
+	printf("Key cannot be empty");
+	return;
+    }
     for (int i = 0; message[i] != '\0'; i++) {
         message[i] ^= key[i % keyLength];
     }
@@ -59,6 +63,7 @@ int main() {
 
         char buffer[1000];
         fgets(buffer, sizeof(buffer), file);
+	buffer[strcspn(buffer, "\n")] = '\0';
         fclose(file);
 
         xorEncryptDecrypt(buffer, key);

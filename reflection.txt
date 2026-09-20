@@ -1,0 +1,3 @@
+In my opinion, the core application of the xor script did not radically change with the between your final commit from step 5 to your final commit from step 7.
+Though there were a few problems with the script as it was, there was very little that truly changed. It fundamentally takes the input from the user and either encrypts
+or decrypts based on the strings. The only major change was the ability to enter a String as was initially intended. 
